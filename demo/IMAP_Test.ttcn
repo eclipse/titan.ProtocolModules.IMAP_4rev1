@@ -1,0 +1,274 @@
+/******************************************************************************
+* Copyright (c) 2005, 2015  Ericsson AB
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+* Tibor Bende
+* Gábor Ziegler
+* Gabor Szalai
+******************************************************************************/
+//
+//  File:     IMAP_Test.ttcn
+//  Rev:      R3A
+//  Prodnr:   CNL 113 660
+///////////////////////////////////////////////////////////////////////////////
+module IMAP_Test{
+import from IMAP_Types all;
+import from IMAP_Demo all;
+import from TCCFileIO_Functions all;
+
+
+type component dummy{
+}
+
+modulepar charstring tsp_subscribe_server2client:= "imap_delete_unsubscribe_eth.raw.server2client"
+modulepar charstring tsp_unsubscribe_client2server:= "imap_delete_unsubscribe_eth.raw.client2server"
+modulepar charstring tsp_initial_client2server:= "imap_initial_eth.raw.client2server"
+modulepar charstring tsp_initial_server2client:= "imap_initial_eth.raw.server2client"
+
+
+function f_IMAP_Test_reportFatalError( charstring pl_msg) {
+  log(pl_msg);
+  setverdict(fail);
+  stop;
+}
+function f_IMAP_Test_reportNonFatalError( charstring pl_msg) {
+  log(pl_msg);
+  setverdict(fail);
+}
+
+testcase IMAP_test_decodeCapture_unsubscribe_Server2Client() runs on dummy {
+  var integer vl_fd := f_FIO_open_rdonly(tsp_subscribe_server2client);
+  var octetstring vl_octBuff :=''O, vl_octFile := ''O
+  var IMAP_ServerResponse vl_resp;
+
+  //open input
+  if (vl_fd<0) 
+  {  
+    f_IMAP_Test_reportFatalError(%definitionId& ": cannot open file:"& tsp_subscribe_server2client)
+  } else {
+    log(%definitionId, ": succesfully opened file")
+    setverdict(pass);
+  }
+
+  //read into memory
+  var integer vl_charCount := f_FIO_read_data(vl_fd, vl_octBuff, 1024),
+  vl_charsRead := 0;
+
+  while ( vl_charCount>0)
+  {    
+    vl_charsRead := vl_charsRead+vl_charCount;
+    //log(%definitionId, ": read char:#", vl_charCount)
+    //log(%definitionId, ": raw buffer:#", vl_octBuff)
+    vl_octFile := vl_octFile&vl_octBuff;
+    vl_charCount := f_FIO_read_data(vl_fd, vl_octBuff, 1024);
+  }
+  if(vl_octFile==''O) {
+    f_IMAP_Test_reportFatalError(%definitionId&": empty file!")
+  }
+  log(%definitionId, ": read chars total:", vl_charsRead)
+  log(%definitionId, ": read raw data:", vl_octFile)
+
+  //close file
+  if (f_FIO_close(vl_fd)!=0) {
+    f_IMAP_Test_reportFatalError(%definitionId& ": cannot close file:"& tsp_subscribe_server2client)
+  } 
+  //try to dissect it into Server responses that miay include "literal" string args
+  var integer vl_idx :=0, vl_length:=-1;
+  var ro_integer vl_dummy;
+  vl_length := f_IMAP_getMsgLen(vl_octFile,vl_dummy)
+  log(%definitionId, ": got next length:", vl_length, ", after index pos.:", vl_idx)
+  while (vl_length>0) {
+    vl_octBuff := substr(vl_octFile,vl_idx,vl_length);    
+    log(%definitionId, ": processing stream fragment:", vl_octBuff);
+    vl_resp := textdec_IMAP_Response(oct2char(vl_octBuff))
+    if (ischosen(vl_resp.unrecognized)) {
+      f_IMAP_Test_reportNonFatalError(%definitionId& ": unrecognized message!")
+    } else {setverdict (pass)}
+    log(%definitionId, ": decoded stream fragment:", vl_resp);
+
+    vl_idx := vl_idx+vl_length;
+    vl_length := f_IMAP_getMsgLen(substr(vl_octFile,vl_idx, lengthof(vl_octFile)-vl_idx),vl_dummy)
+    log(%definitionId, ": got next length:", vl_length, ", after index pos.:", vl_idx)
+  }
+}
+
+testcase IMAP_test_decodeCapture_unsubscribe_Client2Server() runs on dummy {
+  var integer vl_fd := f_FIO_open_rdonly(tsp_unsubscribe_client2server);
+  var octetstring vl_octBuff :=''O, vl_octFile := ''O
+  var IMAP_ClientCommand vl_resp;
+  
+  //open input
+  if (vl_fd<0) 
+  {  
+    f_IMAP_Test_reportFatalError(%definitionId& ": cannot open file:"& tsp_unsubscribe_client2server)
+  } else {
+    log(%definitionId, ": succesfully opened file")
+    setverdict(pass);
+  }
+  
+  //read into memory
+  var integer vl_charCount := f_FIO_read_data(vl_fd, vl_octBuff, 1024),
+  vl_charsRead := 0;
+  
+  while ( vl_charCount>0)
+  {    
+    vl_charsRead := vl_charsRead+vl_charCount;
+    //log(%definitionId, ": read char:#", vl_charCount)
+    //log(%definitionId, ": raw buffer:#", vl_octBuff)
+    vl_octFile := vl_octFile&vl_octBuff;
+    vl_charCount := f_FIO_read_data(vl_fd, vl_octBuff, 1024);
+  }
+  if(vl_octFile==''O) {
+    f_IMAP_Test_reportFatalError(%definitionId&": empty file!")
+  }
+  log(%definitionId, ": read chars total:", vl_charsRead)
+  log(%definitionId, ": read raw data:", vl_octFile)
+  
+  //close file
+  if (f_FIO_close(vl_fd)!=0) {
+    f_IMAP_Test_reportFatalError(%definitionId& ": cannot close file:"& tsp_subscribe_server2client)
+  } 
+  //try to dissect it into Server responses that miay include "literal" string args
+  var integer vl_idx :=0, vl_length:=-1;
+  var ro_integer vl_dummy;
+  vl_length := f_IMAP_getMsgLen(vl_octFile,vl_dummy)
+  log(%definitionId, ": got next length:", vl_length, ", after index pos.:", vl_idx)
+  while (vl_length>0) {
+    vl_octBuff := substr(vl_octFile,vl_idx,vl_length);    
+    log(%definitionId, ": processing stream fragment:", vl_octBuff);
+    vl_resp := textdec_IMAP_Command(oct2char(vl_octBuff))
+    if (ischosen(vl_resp.unrecognized)) {
+      f_IMAP_Test_reportNonFatalError(%definitionId& ": unrecognized message!")
+    } else {setverdict (pass)}
+    log(%definitionId, ": decoded stream fragment:", vl_resp);
+    
+    vl_idx := vl_idx+vl_length;
+    vl_length := f_IMAP_getMsgLen(substr(vl_octFile,vl_idx, lengthof(vl_octFile)-vl_idx),vl_dummy)
+    log(%definitionId, ": got next length:", vl_length, ", after index pos.:", vl_idx)
+  }
+}
+
+testcase IMAP_test_decodeCapture_initial_Server2Client() runs on dummy {
+  var integer vl_fd := f_FIO_open_rdonly(tsp_initial_server2client);
+  var octetstring vl_octBuff :=''O, vl_octFile := ''O
+  var IMAP_ServerResponse vl_resp;
+
+  //open input
+  if (vl_fd<0) 
+  {  
+    f_IMAP_Test_reportFatalError(%definitionId& ": cannot open file:"& tsp_initial_server2client)
+  } else {
+    log(%definitionId, ": succesfully opened file")
+    setverdict(pass);
+  }
+
+  //read into memory
+  var integer vl_charCount := f_FIO_read_data(vl_fd, vl_octBuff, 1024),
+  vl_charsRead := 0;
+
+  while ( vl_charCount>0)
+  {    
+    vl_charsRead := vl_charsRead+vl_charCount;
+    //log(%definitionId, ": read char:#", vl_charCount)
+    //log(%definitionId, ": raw buffer:#", vl_octBuff)
+    vl_octFile := vl_octFile&vl_octBuff;
+    vl_charCount := f_FIO_read_data(vl_fd, vl_octBuff, 1024);
+  }
+  if(vl_octFile==''O) {
+    f_IMAP_Test_reportFatalError(%definitionId&": empty file!")
+  }
+  log(%definitionId, ": read chars total:", vl_charsRead)
+  log(%definitionId, ": read raw data:", vl_octFile)
+
+  //close file
+  if (f_FIO_close(vl_fd)!=0) {
+    f_IMAP_Test_reportFatalError(%definitionId& ": cannot close file:"& tsp_initial_server2client)
+  } 
+  //try to dissect it into Server responses that miay include "literal" string args
+  var integer vl_idx :=0, vl_length:=-1;
+  var ro_integer vl_dummy;
+  vl_length := f_IMAP_getMsgLen(vl_octFile,vl_dummy)
+  log(%definitionId, ": got next length:", vl_length, ", after index pos.:", vl_idx)
+  while (vl_length>0) {
+    vl_octBuff := substr(vl_octFile,vl_idx,vl_length);    
+    log(%definitionId, ": processing stream fragment:", vl_octBuff);
+    vl_resp := textdec_IMAP_Response(oct2char(vl_octBuff))
+    if (ischosen(vl_resp.unrecognized)) {
+      f_IMAP_Test_reportNonFatalError(%definitionId& ": unrecognized message!")
+    } else {setverdict (pass)}
+    log(%definitionId, ": decoded stream fragment:", vl_resp);
+
+    vl_idx := vl_idx+vl_length;
+    vl_length := f_IMAP_getMsgLen(substr(vl_octFile,vl_idx, lengthof(vl_octFile)-vl_idx),vl_dummy)
+    log(%definitionId, ": got next length:", vl_length, ", after index pos.:", vl_idx)
+  }
+}
+
+testcase IMAP_test_decodeCapture_initial_Client2Server() runs on dummy {
+  var integer vl_fd := f_FIO_open_rdonly(tsp_initial_client2server);
+  var octetstring vl_octBuff :=''O, vl_octFile := ''O
+  var IMAP_ClientCommand vl_resp;
+  
+  //open input
+  if (vl_fd<0) 
+  {  
+    f_IMAP_Test_reportFatalError(%definitionId& ": cannot open file:"& tsp_initial_client2server)
+  } else {
+    log(%definitionId, ": succesfully opened file")
+    setverdict(pass);
+  }
+  
+  //read into memory
+  var integer vl_charCount := f_FIO_read_data(vl_fd, vl_octBuff, 1024),
+  vl_charsRead := 0;
+  
+  while ( vl_charCount>0)
+  {    
+    vl_charsRead := vl_charsRead+vl_charCount;
+    //log(%definitionId, ": read char:#", vl_charCount)
+    //log(%definitionId, ": raw buffer:#", vl_octBuff)
+    vl_octFile := vl_octFile&vl_octBuff;
+    vl_charCount := f_FIO_read_data(vl_fd, vl_octBuff, 1024);
+  }
+  if(vl_octFile==''O) {
+    f_IMAP_Test_reportFatalError(%definitionId&": empty file!")
+  }
+  log(%definitionId, ": read chars total:", vl_charsRead)
+  log(%definitionId, ": read raw data:", vl_octFile)
+  
+  //close file
+  if (f_FIO_close(vl_fd)!=0) {
+    f_IMAP_Test_reportFatalError(%definitionId& ": cannot close file:"& tsp_initial_server2client)
+  } 
+  //try to dissect it into Server responses that miay include "literal" string args
+  var integer vl_idx :=0, vl_length:=-1;
+  var ro_integer vl_dummy;
+  vl_length := f_IMAP_getMsgLen(vl_octFile,vl_dummy)
+  log(%definitionId, ": got next length:", vl_length, ", after index pos.:", vl_idx)
+  while (vl_length>0) {
+    vl_octBuff := substr(vl_octFile,vl_idx,vl_length);    
+    log(%definitionId, ": processing stream fragment:", vl_octBuff);
+    vl_resp := textdec_IMAP_Command(oct2char(vl_octBuff))
+    if (ischosen(vl_resp.unrecognized)) {
+      f_IMAP_Test_reportNonFatalError(%definitionId& ": unrecognized message!")
+    } else {setverdict (pass)}
+    log(%definitionId, ": decoded stream fragment:", vl_resp);
+    
+    vl_idx := vl_idx+vl_length;
+    vl_length := f_IMAP_getMsgLen(substr(vl_octFile,vl_idx, lengthof(vl_octFile)-vl_idx),vl_dummy)
+    log(%definitionId, ": got next length:", vl_length, ", after index pos.:", vl_idx)
+  }
+}
+
+control {
+  execute(IMAP_test_decodeCapture_initial_Server2Client());
+  execute(IMAP_test_decodeCapture_unsubscribe_Server2Client());
+  execute(IMAP_test_decodeCapture_initial_Client2Server());
+  execute(IMAP_test_decodeCapture_unsubscribe_Client2Server());
+}
+
+}

@@ -1,0 +1,179 @@
+* LIST (\HasNoChildren) "/" Prueba
+63 OK LIST completed.
+64 OK NOOP completed.
+* 0 EXISTS
+* 0 RECENT
+* FLAGS (\Seen \Answered \Flagged \Deleted \Draft $MDNSent)
+* OK [PERMANENTFLAGS (\Seen \Answered \Flagged \Deleted \Draft $MDNSent)] Permanent flags
+* OK [UIDVALIDITY 363846] UIDVALIDITY value
+65 OK [READ-WRITE] SELECT completed.
+66 OK NOOP completed.
+* LIST (\HasNoChildren) "/" "Personal mails"
+67 OK LIST completed.
+68 OK NOOP completed.
+* 14 EXISTS
+* 14 RECENT
+* FLAGS (\Seen \Answered \Flagged \Deleted \Draft $MDNSent)
+* OK [PERMANENTFLAGS (\Seen \Answered \Flagged \Deleted \Draft $MDNSent)] Permanent flags
+* OK [UIDVALIDITY 39811] UIDVALIDITY value
+69 OK [READ-WRITE] SELECT completed.
+* LIST (\HasNoChildren) "/" Prueba
+70 OK LIST completed.
+71 OK UNSUBSCRIBE completed.
+72 OK DELETE completed.
+* 1 FETCH (UID 1 FLAGS (\Seen \Answered \Recent))
+* 2 FETCH (UID 2 FLAGS (\Seen \Recent))
+* 3 FETCH (UID 3 FLAGS (\Seen \Answered \Recent))
+* 4 FETCH (UID 4 FLAGS (\Seen \Recent))
+* 5 FETCH (UID 5 FLAGS (\Seen \Answered \Recent))
+* 6 FETCH (UID 6 FLAGS (\Seen \Answered \Recent))
+* 7 FETCH (UID 7 FLAGS (\Seen \Recent))
+* 8 FETCH (UID 8 FLAGS (\Seen \Answered \Recent))
+* 9 FETCH (UID 9 FLAGS (\Seen \Recent))
+* 10 FETCH (UID 10 FLAGS (\Seen \Answered \Recent))
+* 11 FETCH (UID 11 FLAGS (\Seen \Recent))
+* 12 FETCH (UID 12 FLAGS (\Seen \Recent))
+* 13 FETCH (UID 13 FLAGS (\Seen \Answered \Recent))
+* 14 FETCH (UID 14 FLAGS (\Seen \Recent))
+73 OK FETCH completed.
+* 1 FETCH (UID 1 RFC822.SIZE 3565 FLAGS (\Seen \Answered \Recent) ENVELOPE ("Wed, 25 Jun 2008 08:24:00 +0000" "RE: New mail account" (("James Thomsit" NIL "jamesthomsit" "hotmail.com")) (("James Thomsit" NIL "jamesthomsit" "hotmail.com")) (("James Thomsit" NIL "jamesthomsit" "hotmail.com")) (("Maria Yesenia Burgos Ortega" NIL "maria.yesenia.burgos.ortega" "ericsson.com")) NIL NIL " <41F9AE2797D48947ABB0B2FC8FBE1FD85A6F4D@esealmw121.eemea.ericsson.se>" "<BLU146-W324331A3A04335401E48A7CFA00@phx.gbl>") BODY[HEADER.FIELDS (REFERENCES)] {87}
+References:
+ <41F9AE2797D48947ABB0B2FC8FBE1FD85A6F4D@esealmw121.eemea.ericsson.se>
+
+)
+* 2 FETCH (UID 2 RFC822.SIZE 11540 FLAGS (\Seen \Recent) ENVELOPE ("Tue, 24 Jun 2008 10:35:33 +0200" "RE: Horario Ericsson en MADRID" (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("Maria Yesenia Burgos Ortega" NIL "maria.yesenia.burgos.ortega" "ericsson.com")) NIL NIL "<41F9AE2797D48947ABB0B2FC8FBE1FD85A6BE6@esealmw121.eemea.ericsson.se>" "<6006DAC0B81F85439BC960F36F929CDF01C648B2@eseldmw101.eemea.ericsson.se>") BODY[HEADER.FIELDS (REFERENCES)] {157}
+References: <6006DAC0B81F85439BC960F36F929CDF01C648B0@eseldmw101.eemea.ericsson.se> <41F9AE2797D48947ABB0B2FC8FBE1FD85A6BE6@esealmw121.eemea.ericsson.se>
+
+)
+* 3 FETCH (UID 3 RFC822.SIZE 3510 FLAGS (\Seen \Answered \Recent) ENVELOPE ("Mon, 23 Jun 2008 10:00:19 +0200" "RE: Hello" (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("Maria Yesenia Burgos Ortega" NIL "maria.yesenia.burgos.ortega" "ericsson.com")) NIL NIL "<41F9AE2797D48947ABB0B2FC8FBE1FD8576E74@esealmw121.eemea.ericsson.se>" "<6006DAC0B81F85439BC960F36F929CDF01C648A7@eseldmw101.eemea.ericsson.se>") BODY[HEADER.FIELDS (REFERENCES)] {85}
+References: <41F9AE2797D48947ABB0B2FC8FBE1FD8576E74@esealmw121.eemea.ericsson.se>
+
+)
+* 4 FETCH (UID 4 RFC822.SIZE 1849 FLAGS (\Seen \Recent) ENVELOPE ("Tue, 24 Jun 2008 10:34:51 +0200" "Read: RE: Horario Ericsson en MADRID" (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("Maria Yesenia Burgos Ortega" NIL "yesenia.burgos" "ericsson.com")) NIL NIL NIL "<6006DAC0B81F85439BC960F36F929CDF01BBC4DE@eseldmw101.eemea.ericsson.se>") BODY[HEADER.FIELDS (REFERENCES)] {2}
+
+)
+* 5 FETCH (UID 5 RFC822.SIZE 2095 FLAGS (\Seen \Answered \Recent) ENVELOPE ("Tue, 24 Jun 2008 10:02:32 +0200" "Horario Ericsson en MADRID" (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("Maria Yesenia Burgos Ortega" NIL "maria.yesenia.burgos.ortega" "ericsson.com")) NIL NIL NIL "<6006DAC0B81F85439BC960F36F929CDF01C648AE@eseldmw101.eemea.ericsson.se>") BODY[HEADER.FIELDS (REFERENCES)] {2}
+
+)
+* 6 FETCH (UID 6 RFC822.SIZE 7619 FLAGS (\Seen \Answered \Recent) ENVELOPE ("Tue, 24 Jun 2008 10:30:17 +0200" "RE: Horario Ericsson en MADRID" (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("Maria Yesenia Burgos Ortega" NIL "maria.yesenia.burgos.ortega" "ericsson.com")) NIL NIL "<41F9AE2797D48947ABB0B2FC8FBE1FD85A6BB4@esealmw121.eemea.ericsson.se>" "<6006DAC0B81F85439BC960F36F929CDF01C648B0@eseldmw101.eemea.ericsson.se>") BODY[HEADER.FIELDS (REFERENCES)] {157}
+References: <6006DAC0B81F85439BC960F36F929CDF01C648AE@eseldmw101.eemea.ericsson.se> <41F9AE2797D48947ABB0B2FC8FBE1FD85A6BB4@esealmw121.eemea.ericsson.se>
+
+)
+* 7 FETCH (UID 7 RFC822.SIZE 1837 FLAGS (\Seen \Recent) ENVELOPE ("Tue, 24 Jun 2008 10:13:55 +0200" "Read: RE: Horario Ericsson en MADRID" (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("Maria Yesenia Burgos Ortega" NIL "yesenia.burgos" "ericsson.com")) NIL NIL NIL "<6006DAC0B81F85439BC960F36F929CDF01BBC4DD@eseldmw101.eemea.ericsson.se>") BODY[HEADER.FIELDS (REFERENCES)] {2}
+
+)
+* 8 FETCH (UID 8 RFC822.SIZE 6771 FLAGS (\Seen \Answered \Recent) ENVELOPE ("Mon, 23 Jun 2008 10:10:14 +0200" "RE: Hello" (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("Maria Yesenia Burgos Ortega" NIL "maria.yesenia.burgos.ortega" "ericsson.com")) NIL NIL "<41F9AE2797D48947ABB0B2FC8FBE1FD8576E8D@esealmw121.eemea.ericsson.se>" "<6006DAC0B81F85439BC960F36F929CDF01C648A9@eseldmw101.eemea.ericsson.se>") BODY[HEADER.FIELDS (REFERENCES)] {157}
+References: <6006DAC0B81F85439BC960F36F929CDF01C648A7@eseldmw101.eemea.ericsson.se> <41F9AE2797D48947ABB0B2FC8FBE1FD8576E8D@esealmw121.eemea.ericsson.se>
+
+)
+* 9 FETCH (UID 9 RFC822.SIZE 4436 FLAGS (\Seen \Recent) ENVELOPE ("Wed, 25 Jun 2008 02:37:39 -0700 (PDT)" "Please confirm your email address" (("LinkedIn Email Confirmation" NIL "emailconfirm" "linkedin.com")) ((NIL NIL "messages-noreply" "bounce.linkedin.com")) (("LinkedIn Email Confirmation" NIL "emailconfirm" "linkedin.com")) (("Yesenia Burgos" NIL "maria.yesenia.burgos.ortega" "ericsson.com")) NIL NIL NIL "<1271699387.3231242.1214386659404.JavaMail.app@com05.prod>") BODY[HEADER.FIELDS (REFERENCES)] {2}
+
+)
+* 10 FETCH (UID 10 RFC822.SIZE 2064 FLAGS (\Seen \Answered \Recent) ENVELOPE ("Wed, 25 Jun 2008 11:45:34 +0200" "Sametime" (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("Maria Yesenia Burgos Ortega" NIL "maria.yesenia.burgos.ortega" "ericsson.com")) NIL NIL NIL "<6006DAC0B81F85439BC960F36F929CDF01C648C7@eseldmw101.eemea.ericsson.se>") BODY[HEADER.FIELDS (REFERENCES)] {2}
+
+)
+* 11 FETCH (UID 11 RFC822.SIZE 1783 FLAGS (\Seen \Recent) ENVELOPE ("Wed, 25 Jun 2008 12:05:32 +0200" "Read: RE: Sametime" (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("=?iso-8859-1?Q?Noemi_Fern=E1ndez-Delgado_X?=" NIL "noemi.x.fernandez-delgado" "ericsson.com")) (("Maria Yesenia Burgos Ortega" NIL "yesenia.burgos" "ericsson.com")) NIL NIL NIL "<6006DAC0B81F85439BC960F36F929CDF01BBC4E5@eseldmw101.eemea.ericsson.se>") BODY[HEADER.FIELDS (REFERENCES)] {2}
+
+)
+* 12 FETCH (UID 12 RFC822.SIZE 4941 FLAGS (\Seen \Recent) ENVELOPE ("Wed, 25 Jun 2008 18:57:43 +0200" "RE: Hi" (("Olaf Taylor" NIL "olaf.taylor" "ericsson.com")) (("Olaf Taylor" NIL "olaf.taylor" "ericsson.com")) (("Olaf Taylor" NIL "olaf.taylor" "ericsson.com")) (("Maria Yesenia Burgos Ortega" NIL "maria.yesenia.burgos.ortega" "ericsson.com")) NIL NIL "<41F9AE2797D48947ABB0B2FC8FBE1FD85A6F53@esealmw121.eemea.ericsson.se>" "<473C5B83B8771F44BC6C4018E32891A4058C1390@eseldmw101.eemea.ericsson.se>") BODY[HEADER.FIELDS (REFERENCES)] {85}
+References: <41F9AE2797D48947ABB0B2FC8FBE1FD85A6F53@esealmw121.eemea.ericsson.se>
+
+)
+* 13 FETCH (UID 13 RFC822.SIZE 27500 FLAGS (\Seen \Answered \Recent) ENVELOPE ("Thu, 26 Jun 2008 13:33:59 +0200" "=?iso-8859-1?Q?RV:_NO_tengo_m=F3vil?=" (("Ruben Ramirez" NIL "rramirez" "intemac.es")) (("Ruben Ramirez" NIL "rramirez" "intemac.es")) (("Ruben Ramirez" NIL "rramirez" "intemac.es")) (("Yesenia Burgos Ortega" NIL "maria.yesenia.burgos.ortega" "ericsson.com")) NIL NIL NIL "<001501c8d780$88140be0$3946a8c0@intemac.es>") BODY[HEADER.FIELDS (REFERENCES)] {2}
+
+)
+* 14 FETCH (UID 14 RFC822.SIZE 17911 FLAGS (\Seen \Recent) ENVELOPE ("Thu, 26 Jun 2008 11:48:04 +0200" "=?iso-8859-1?Q?RE:_NO_tengo_m=F3vil?=" (("Ruben Ramirez" NIL "rramirez" "intemac.es")) (("Ruben Ramirez" NIL "rramirez" "intemac.es")) (("Ruben Ramirez" NIL "rramirez" "intemac.es")) (("'Maria Yesenia Burgos Ortega'" NIL "maria.yesenia.burgos.ortega" "ericsson.com")) NIL NIL "<41F9AE2797D48947ABB0B2FC8FBE1FD85A7647@esealmw121.eemea.ericsson.se>" "<000601c8d771$be287d60$3946a8c0@intemac.es>") BODY[HEADER.FIELDS (REFERENCES)] {2}
+
+)
+74 OK FETCH completed.
+* 1 FETCH (UID 1 RFC822.SIZE 3565 FLAGS (\Seen \Answered \Recent) BODY[] {3565}
+Received: from esealmw128.eemea.ericsson.se ([153.88.254.172]) by esealmw121.eemea.ericsson.se with Microsoft SMTPSVC(6.0.3790.1830);
+	 Wed, 25 Jun 2008 10:24:31 +0200
+Received: from mailgw8.ericsson.se ([193.180.251.59]) by esealmw128.eemea.ericsson.se with Microsoft SMTPSVC(6.0.3790.1830);
+	 Wed, 25 Jun 2008 10:24:31 +0200
+Received: from mailgw8.ericsson.se (unknown [127.0.0.1])
+	by mailgw8.ericsson.se (Symantec Mail Security) with ESMTP id 46C3B520002
+	for <maria.yesenia.burgos.ortega@ericsson.com>; Wed, 25 Jun 2008 10:24:03 +0200 (CEST)
+X-AuditID: c1b4fb3b-abd73bb000005f6d-d1-486200a2c41d
+Received: from blu0-omc3-s9.blu0.hotmail.com (blu0-omc3-s9.blu0.hotmail.com [65.55.116.84])
+	by mailgw8.ericsson.se (Symantec Mail Security) with ESMTP id A4196498032
+	for <maria.yesenia.burgos.ortega@ericsson.com>; Wed, 25 Jun 2008 10:24:02 +0200 (CEST)
+Received: from BLU146-W32 ([65.55.116.74]) by blu0-omc3-s9.blu0.hotmail.com with Microsoft SMTPSVC(6.0.3790.3959);
+	 Wed, 25 Jun 2008 01:24:01 -0700
+Message-ID: <BLU146-W324331A3A04335401E48A7CFA00@phx.gbl>
+Content-Type: multipart/alternative;
+	boundary="_c46ab132-e294-4cb7-81ad-89df3d5cd712_"
+X-Originating-IP: [78.146.197.93]
+From: James Thomsit <jamesthomsit@hotmail.com>
+To: Maria Yesenia Burgos Ortega <maria.yesenia.burgos.ortega@ericsson.com>
+Subject: RE: New mail account
+Date: Wed, 25 Jun 2008 08:24:00 +0000
+Importance: Normal
+In-Reply-To:
+ <41F9AE2797D48947ABB0B2FC8FBE1FD85A6F4D@esealmw121.eemea.ericsson.se>
+References:
+ <41F9AE2797D48947ABB0B2FC8FBE1FD85A6F4D@esealmw121.eemea.ericsson.se>
+MIME-Version: 1.0
+X-OriginalArrivalTime: 25 Jun 2008 08:24:01.0313 (UTC) FILETIME=[D264E910:01C8D69C]
+X-Brightmail-Tracker: AAAABAqhaXcKoW/4CqIFNQqlpAo=
+Return-Path: jamesthomsit@hotmail.com
+
+--_c46ab132-e294-4cb7-81ad-89df3d5cd712_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+
+kool, still sending the dancing stuff to hotmali acount though...
+=20
+So how's it going there??? Hope all is good.
+
+
+Subject: New mail accountDate: Tue, 24 Jun 2008 17:46:06 +0200From: maria.y=
+esenia.burgos.ortega@ericsson.comTo: jamesthomsit@hotmail.com
+
+Hey, Just to make you know my new mail account. Hope you are ok.=20
+Yesenia XX=20
+_________________________________________________________________
+
+http://clk.atdmt.com/UKM/go/msnnkmgl0010000007ukm/direct/01/=
+
+--_c46ab132-e294-4cb7-81ad-89df3d5cd712_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<style>
+.hmmessage P
+{
+margin:0px;
+padding:0px
+}
+body.hmmessage
+{
+FONT-SIZE: 10pt;
+FONT-FAMILY:Tahoma
+}
+</style>
+</head>
+<body class=3D'hmmessage'>
+kool, still sending the dancing stuff to hotmali acount though...<BR>
+&nbsp;<BR>
+So how's it going there??? Hope all is good.<BR><BR><BR>
+<BLOCKQUOTE>
+<HR>
+Subject: New mail account<BR>Date: Tue, 24 Jun 2008 17:46:06 +0200<BR>From:=
+ maria.yesenia.burgos.ortega@ericsson.com<BR>To: jamesthomsit@hotmail.com<B=
+R><BR>
+<META content=3D"Microsoft SafeHTML" name=3DGenerator>
+<FONT face=3DArial size=3D2>Hey,</FONT> <BR><FONT face=3DArial size=3D2>Jus=
+t to make you know my new mail account.</FONT> <BR><FONT face=3DArial size=
+=3D2>Hope you are ok.</FONT> <BR>
+<FONT face=3DArial size=3D2>Yesenia XX</FONT> <BR></BLOCKQUOTE><br /><hr />=
+Messenger's gone Mobile! <a href=3D'http://clk.atdmt.com/UKM/go/msnnkmgl001=
+0000001ukm/direct/01/' target=3D'_new'>Get it now!</a></body>
+</html>=
+
+--_c46ab132-e294-4cb7-81ad-89df3d5cd712_--
+)
+75 OK FETCH completed.

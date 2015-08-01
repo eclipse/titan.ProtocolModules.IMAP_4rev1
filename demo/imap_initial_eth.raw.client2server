@@ -1,0 +1,17 @@
+0 CAPABILITY
+1 LOGIN "emaribu" "Pleyades_04"
+2 NAMESPACE
+3 LIST "" ""
+4 LIST "" "%"
+8 LIST "" "Drafts/%"
+9 LIST "" "INBOX/%"
+10 LIST "" "Journal/%"
+12 LIST "" "Notes/%"
+13 LIST "" "Outbox/%"
+14 LIST "" "Personal mails/%"
+15 LIST "" "Sent Items/%"
+16 LIST "" "Sync Issues/%"
+17 LIST "" "Tasks/%"
+18 LIST "" "Sync Issues/Conflicts/%"
+19 LIST "" "Sync Issues/Local Failures/%"
+20 LIST "" "Sync Issues/Server Failures/%"

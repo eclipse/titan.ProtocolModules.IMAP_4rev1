@@ -1,0 +1,1423 @@
+/******************************************************************************
+* Copyright (c) 2005, 2015  Ericsson AB
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+* Tibor Bende
+* Gábor Ziegler
+* Gabor Szalai
+******************************************************************************/
+//
+//  File:     IMAP_Types.ttcn
+//  Rev:      R3A
+//  Prodnr:   CNL 113 660
+///////////////////////////////////////////////////////////////////////////////
+
+module IMAP_Types {
+
+ external function textenc_IMAP_PDU(in IMAP_PDU pdu) return charstring
+ with { extension "prototype(convert) encode(TEXT)" };
+ external function textdec_IMAP_Command(in charstring stream) return IMAP_ClientCommand
+ with { extension "prototype(convert) decode(TEXT)" };
+ external function textdec_IMAP_Response(in charstring stream) return IMAP_ServerResponse
+ with { extension "prototype(convert) decode(TEXT)" };
+ external function textdec_IMAP_Response_separated(in charstring stream) return IMAP_ServerResponse_separated
+ with { extension "prototype(convert) decode(TEXT)" };
+
+ external function octenc_IMAP_PDU(in IMAP_PDU pdu) return octetstring
+ external function octdec_IMAP_Command(in octetstring stream) return IMAP_ClientCommand
+ external function octdec_IMAP_Response(in octetstring stream) return IMAP_ServerResponse
+ external function octdec_IMAP_Response_separated(in octetstring stream) return IMAP_ServerResponse_separated
+
+ external function IMAP_get_msg_length(in octetstring stream, in boolean client_side:=true) return integer
+
+type union IMAP_PDU {
+  IMAP_ClientCommand      command,
+  IMAP_ServerResponse     response,
+  IMAP_ServerResponse_separated response_separated
+} with {variant "TEXT_CODING()"}
+
+type union IMAP_ServerResponse{
+  IMAP_Response		response,
+  IMAP_Greeting 	greeting,
+  charstring		unrecognized
+}
+
+type union IMAP_ClientCommand{
+  IMAP_Command		recognized,
+  charstring		unrecognized
+}
+
+type record IMAP_Command {
+  IMAP_Tag 	tag,
+  IMAP_CommandType	command	
+} with { 
+  variant "END('\r\n')"
+  variant (command) "BEGIN(' ')"
+}
+
+type union IMAP_ServerResponse_separated{
+  IMAP_ContinueReq 	  continueRequest, 
+  IMAP_Response_separated recognized,
+  charstring		  unrecognized
+}
+
+type record IMAP_Response_separated{
+  IMAP_Response_Tag       tag,
+  IMAP_Responses          response
+} with {
+  variant "END('\r\n')"
+}
+
+
+type union IMAP_Response_Tag{
+  IMAP_Untaggged  untagged,
+  IMAP_Tag 	  tag
+} with {
+  variant "END(' ')"
+}
+
+
+type record IMAP_Untaggged {} with {
+  variant "BEGIN('*',,case_insensitive)"
+}
+
+
+type union IMAP_Responses{
+  IMAP_OK_Resp        ok_resp,
+  IMAP_NO_Resp        no_resp,
+  IMAP_BAD_Resp       bad_resp,
+  IMAP_Preauth_Resp   preauth_resp,
+  IMAP_RespCondBye       bye_resp,
+  IMAP_CapabilityData	capability_resp,
+  IMAP_MailboxData    mailbox_resps,
+  IMAP_MessageData    msg_resps
+}
+
+
+type record IMAP_OK_Resp{
+  IMAP_RespText text
+} with {
+  variant "BEGIN('OK ','OK ',case_insensitive)"
+}
+
+type record IMAP_NO_Resp{
+  IMAP_RespText text
+} with {
+  variant "BEGIN('NO ','NO ',case_insensitive)"
+}
+
+type record IMAP_BAD_Resp{
+  IMAP_RespText text
+} with {
+  variant "BEGIN('BAD ','BAD ',case_insensitive)"
+}
+
+type record IMAP_Preauth_Resp{
+  IMAP_RespText text
+} with {
+  variant "BEGIN('PREAUTH ','PREAUTH ',case_insensitive)"
+}
+
+type union IMAP_CommandType {
+  IMAP_CapabilityCommand_TEXT 	capabilityCommandArgs,
+  IMAP_LogoutCommand_TEXT		logoutCommandArgs,	
+  IMAP_NoopCommand_TEXT			noopCommandArgs,
+  IMAP_AppendCommand 			appendCommandArgs, 
+  IMAP_CreateCommand 			createCommandArgs, 
+  IMAP_DeleteCommand 			deleteCommandArgs, 
+  IMAP_ExamineCommand 			examineCommandArgs,
+  IMAP_ListCommand 				listCommandArgs, 
+  IMAP_LsubCommand 				lsubCommandArgs,
+  IMAP_RenameCommand 			renameCommandArgs, 
+  IMAP_SelectCommand 			selectCommandArgs,
+  IMAP_StatusCommand 			statusCommandArgs, 
+  IMAP_SubscribeCommand 		subscribeCommandArgs, 
+  IMAP_UnsunbscribeCommand 		unsubscribeCommandArgs,
+  IMAP_LoginCommand 			loginCommandArgs, 
+  IMAP_AuthenticateCommand 		authenticateCommandArgs, 
+  IMAP_StartTLSCommand_TEXT 	startTLS,
+  IMAP_CheckCommand_TEXT 		checkCommandArgs, 
+  IMAP_CloseCommand_TEXT 		closeCommandArgs, 
+  IMAP_ExpungeCommand_TEXT 		expungeCommandArgs, 
+  IMAP_CopyCommand 				copyCommandArgs, 
+  IMAP_FetchCommand 			fetchCommandArgs, 
+  IMAP_StoreCommand 			storeCommandArgs, 
+  IMAP_UidCommand 				uidCommandArgs,
+  IMAP_SearchCommand 			searchCommandArgs,
+  IMAP_XCommand					xcommandArgs
+}
+
+
+type record IMAP_CapabilityCommand_TEXT{
+} with {
+  variant "BEGIN('CAPABILITY',,case_insensitive)"
+}
+
+type record IMAP_LogoutCommand_TEXT{
+} with {
+  variant "BEGIN('LOGOUT',,case_insensitive)"
+}
+
+type record IMAP_NoopCommand_TEXT{
+} with {
+  variant "BEGIN('NOOP',,case_insensitive)"
+}
+
+type record IMAP_XCommand {
+  IMAP_Atom Xcommand_atom,
+  charstring exper_args 
+} with {
+  variant (Xcommand_atom) "TEXT_CODING(,,'[Xx]#1[!#$&-\'+-\[\^-z|-~]#(1,)')"
+  variant (exper_args) "TEXT_CODING(,,'[^\q{0,0,0,10}\q{0,0,0,13}]')"
+}
+
+type record IMAP_AppendCommand {
+  IMAP_Mailbox 		mailbox, 
+  IMAP_FlagList 	flagList optional, 
+  IMAP_DateTime 	dateTime optional, 
+  IMAP_Literal 		appendLiteral 
+} with {
+  variant "BEGIN('APPEND ','APPEND ',case_insensitive)"
+  variant (flagList) "BEGIN(' ')"
+}
+
+type record IMAP_CreateCommand {
+  IMAP_Mailbox 		mailbox
+} with {
+  variant "BEGIN('CREATE ','CREATE ',case_insensitive)"
+}
+
+type record IMAP_DeleteCommand {
+  IMAP_Mailbox 		mailbox
+} with {
+  variant "BEGIN('DELETE ','DELETE ',case_insensitive)"
+}
+
+type record IMAP_ExamineCommand {
+  IMAP_Mailbox 		mailbox
+} with {
+  variant "BEGIN('EXAMINE ','EXAMINE ',case_insensitive)"
+}
+
+type record IMAP_ListCommand {
+  IMAP_Mailbox 		mailbox,
+  charstring 	listMailbox 
+} with {
+  variant "BEGIN('LIST ','LIST ',case_insensitive)"
+  variant (mailbox) "END(' ','[ ]#(,)')"
+}
+
+type record IMAP_LsubCommand {
+  IMAP_Mailbox 		mailbox,
+  charstring 	listMailbox 
+} with {
+  variant "BEGIN('LSUB ','LSUB ',case_insensitive)"
+  variant (mailbox) "END(' ','[ ]#(,)')"
+}
+
+type record IMAP_RenameCommand {
+  IMAP_Mailbox 		mailboxOld,
+  IMAP_Mailbox 		mailboxNew
+} with {
+  variant "BEGIN('RENAME ','RENAME ',case_insensitive)"
+  variant (mailboxOld) "END(' ','[ ]#(,)')"
+}
+
+type record IMAP_SelectCommand {
+  IMAP_Mailbox 		mailbox
+} with {
+  variant "BEGIN('SELECT ','SELECT ',case_insensitive)"
+}
+
+type record IMAP_StatusCommand{
+  IMAP_Mailbox 		mailbox,
+  IMAP_StatusAttr_List 	statusAttrList  
+} with {
+  variant "BEGIN('STATUS ','STATUS ',case_insensitive)"
+  variant "SEPARATOR(' ')"
+  variant (statusAttrList) "BEGIN('(','\(',case_insensitive)"
+  variant "END(')','\)')"
+}
+
+type record IMAP_SubscribeCommand{
+  IMAP_Mailbox 	mailbox
+} with {
+  variant "BEGIN('SUBSCRIBE ','SUBSCRIBE ',case_insensitive)"
+}
+
+type record IMAP_UnsunbscribeCommand{
+  IMAP_Mailbox 	mailbox
+} with {
+  variant "BEGIN('UNSUBSCRIBE ','UNSUBSCRIBE ',case_insensitive)"
+}
+
+type record IMAP_LoginCommand {
+  IMAP_Astring 		userid,
+  IMAP_Astring 		password
+} with {
+  variant "BEGIN('LOGIN ','LOGIN ',case_insensitive)"
+  variant "SEPARATOR(' ')"
+}
+
+type record 		IMAP_AuthenticateCommand{
+  IMAP_Atom 		authType, 
+  IMAP_Base64_List 	base64List optional
+} with {
+  variant "BEGIN('AUTHENTICATE',,case_insensitive)"
+  variant (authType) "BEGIN(' ',' ',case_insensitive)"
+  variant (authType) "TEXT_CODING(,,'[a-zA-Z\]]#(1,)')"
+}
+
+type record IMAP_StartTLSCommand_TEXT{
+} with {
+  variant "BEGIN('STARTTLS','STARTTLS',case_insensitive)"
+}
+
+type record IMAP_CheckCommand_TEXT{
+} with {
+  variant "BEGIN('CHECK','CHECK',case_insensitive)"
+}
+
+type record IMAP_CloseCommand_TEXT{
+} with {
+  variant "BEGIN('CLOSE','CLOSE',case_insensitive)"
+}
+
+type record IMAP_ExpungeCommand_TEXT{
+} with {
+  variant "BEGIN('EXPUNGE','EXPUNGE',case_insensitive)"
+}
+
+type record IMAP_CopyCommand{
+  IMAP_SequenceSet 	sequenceSet, 
+  IMAP_Mailbox 		mailbox
+} with {
+  variant "BEGIN('COPY ','COPY ',case_insensitive)"
+  variant (mailbox) "BEGIN(' ',' ',case_insensitive)"
+}
+
+type record IMAP_FetchCommand{
+  IMAP_SequenceSet 	sequenceSet,
+  IMAP_FetchArg 	fetchArg 
+} with {
+  variant "BEGIN('FETCH ','FETCH ',case_insensitive)"
+  variant "SEPARATOR(' ')"
+}
+
+type record IMAP_StoreCommand{
+  IMAP_SequenceSet 		sequenceSet,
+  IMAP_StoreAttrFlags 	storeAttrFlags 
+} with {
+  variant "BEGIN('STORE ','STORE ',case_insensitive)"
+  variant (sequenceSet) "END(' ',' ',case_insensitive)"
+}
+
+type union IMAP_UidCommand{
+  IMAP_CopyCommand 		copy,
+  IMAP_FetchCommand 	fetch,
+  IMAP_SearchCommand 	search,
+  IMAP_StoreCommand 	store
+} with {
+  variant "BEGIN('UID ','UID ',case_insensitive)"
+}
+
+type record IMAP_SearchCommand{
+  IMAP_Charset_TEXT 	charset optional, 
+  IMAP_SearchKey_List 	searchKeyList 
+} with {
+  variant "BEGIN('SEARCH ','SEARCH ',case_insensitive)"
+}
+
+type union IMAP_Mailbox { 
+  IMAP_Astring		string,
+  IMAP_Inbox_TEXT 	mailboxText
+}
+
+type record IMAP_Inbox_TEXT {
+} with {
+  variant "BEGIN('INBOX','INBOX',case_insensitive)"
+}
+
+type set of IMAP_Flag IMAP_FlagList with {
+  variant "BEGIN('(','\(',case_insensitive)"
+  variant "SEPARATOR(' ',' ',case_insensitive)"
+  variant "END(')','\)',case_insensitive)"
+}
+
+type set of IMAP_Flag IMAP_Flags with{
+  variant "SEPARATOR(' ')"
+}
+
+
+type charstring IMAP_Flag with {
+  variant "TEXT_CODING(,,'[!#$&-\'+-\\\^-z|-~]#(1,)')"
+}
+
+type record IMAP_DateTime{
+  IMAP_DateDayFixed 	dateDay, 
+  IMAP_DateMonth 		dateMonth, 
+  IMAP_DateYear 		dateYear, 
+  IMAP_Time 			time, 
+  IMAP_Zone 			zone 
+} with {
+  variant "BEGIN(' \"',' \"',case_insensitive)"
+  variant (dateMonth) "BEGIN('-','-',case_insensitive)"
+  variant (dateYear) "BEGIN('-','-',case_insensitive)"
+  variant (time) "BEGIN(' ',' ',case_insensitive)"
+  variant (zone) "BEGIN(' ',' ',case_insensitive)"
+  variant "END('\"')"
+}
+
+type union IMAP_DateDayFixed{
+  IMAP_SingleDigit 	single, 
+  IMAP_DoubleDigit 	double 
+}
+
+type charstring IMAP_SingleDigit with {
+  variant "TEXT_CODING(,,'[ ]#(1,1)[0-9]#(1,1)')"
+}
+
+type charstring IMAP_DoubleDigit  with{
+  variant "TEXT_CODING(,,'[0-9]#(2,2)')"
+}
+
+type union IMAP_DateMonth {
+  IMAP_Jan_TEXT 	jan,
+  IMAP_Feb_TEXT 	feb,
+  IMAP_Mar_TEXT 	mar,
+  IMAP_Apr_TEXT 	apr,
+  IMAP_May_TEXT 	may,
+  IMAP_Jun_TEXT 	jun,
+  IMAP_Jul_TEXT 	jul,
+  IMAP_Aug_TEXT 	aug,
+  IMAP_Sep_TEXT 	sep,
+  IMAP_Oct_TEXT 	oct,
+  IMAP_Nov_TEXT 	nov,
+  IMAP_Dec_TEXT 	dec
+}
+
+type record IMAP_Jan_TEXT {
+} with{
+  variant "BEGIN('Jan',,case_insensitive)"
+}
+
+type record IMAP_Feb_TEXT {
+} with{
+  variant "BEGIN('Feb',,case_insensitive)"
+}
+
+type record IMAP_Mar_TEXT {
+} with{
+  variant "BEGIN('Mar',,case_insensitive)"
+}
+
+type record IMAP_Apr_TEXT {
+} with{
+  variant "BEGIN('Apr',,case_insensitive)"
+}
+
+type record IMAP_May_TEXT {
+} with{
+  variant "BEGIN('May',,case_insensitive)"
+}
+
+type record IMAP_Jun_TEXT {
+} with{
+  variant "BEGIN('Jun',,case_insensitive)"
+}
+
+type record IMAP_Jul_TEXT {
+} with{
+  variant "BEGIN('Jul',,case_insensitive)"
+}
+
+type record IMAP_Aug_TEXT {
+} with{
+  variant "BEGIN('Aug',,case_insensitive)"
+}
+
+type record IMAP_Sep_TEXT {
+} with{
+  variant "BEGIN('Sep',,case_insensitive)"
+}
+
+type record IMAP_Oct_TEXT {
+} with{
+  variant "BEGIN('Oct',,case_insensitive)"
+}
+
+type record IMAP_Nov_TEXT {
+} with{
+  variant "BEGIN('Nov',,case_insensitive)"
+}
+
+type record IMAP_Dec_TEXT {
+} with{
+  variant "BEGIN('Dec',,case_insensitive)"
+}
+
+type charstring IMAP_DateYear with{
+  variant "TEXT_CODING(,,'[0-9]#(4,4)')"
+}
+
+type record IMAP_Time{
+  integer 	hh,
+  integer 	mm,
+  integer 	ss
+} with {
+  variant "SEPARATOR(':')"
+  variant (hh) "TEXT_CODING(,,'[0-9]#(2,2)')"
+  variant (mm) "TEXT_CODING(,,'[0-9]#(2,2)')"
+  variant (ss) "TEXT_CODING(,,'[0-9]#(2,2)')"
+}
+
+type charstring IMAP_Zone with {
+ variant "TEXT_CODING(,,'[-+]#(1,1)[0-9]#(4,4)')"
+}
+
+type IMAP_Astring IMAP_Charset_TEXT with {
+  variant "BEGIN(' CHARSET ',,case_insensitive)"
+}
+
+type union IMAP_SearchKey {
+  IMAP_All_TEXT 	allText, 
+  IMAP_Answered_TEXT 	answeredText,
+  IMAP_Bcc_TEXT 	bcc,
+  IMAP_BeforeSK 	beforeSK,
+  IMAP_Body_TEXT 	bodytext,
+  IMAP_Cc_TEXT 		ccText,
+  IMAP_Deleted_TEXT 	deletedText,
+  IMAP_Flagged_TEXT 	flaggedText,
+  IMAP_From_TEXT 	fromText,
+  IMAP_Keyword_TEXT 	keywordText,
+  IMAP_New_TEXT 	newText,
+  IMAP_Old_TEXT 	oldText,
+  IMAP_OnSK 		onSK,
+  IMAP_Recent_TEXT 	recentText,
+  IMAP_Seen_TEXT 	seenText,
+  IMAP_SinceSK 		sinceSK,
+  IMAP_Subject_TEXT 	subjectText,
+  IMAP_TextSpace_TEXT 	textText,
+  IMAP_ToSpace_TEXT 	toText,
+  IMAP_Unanswered_TEXT 	unansweredText,
+  IMAP_Undeleted_TEXT 	undeletedText,
+  IMAP_Unflagged_TEXT 	unflaggedText,
+  IMAP_Unkeyword_TEXT 	unkeywordText,
+  IMAP_Unseen_TEXT 	unseenText,
+  IMAP_Draft_TEXT 	draftText,
+  IMAP_HeaderSK 	headerSK,
+  IMAP_LargerSK 	largerSK, 
+  IMAP_NotSK 		notSK,
+  IMAP_OrSK 		orSK,
+  IMAP_SentBeforeSK 	sentBeforeSK,
+  IMAP_SentOnSK 	sentOnSK,
+  IMAP_SentSinceSK 	sentSinceSK,
+  IMAP_SmallerSK 	smallerSK, 
+  IMAP_UidSK 		uidSK, 
+  IMAP_Undraft_TEXT 	undraftText,
+  IMAP_SequenceSet 	sequenceSet,
+  IMAP_SearchKey_List 	searchKeys 
+} with {
+  variant (searchKeys) "BEGIN('(','\(',case_insensitive)"
+  variant (searchKeys) "END(')','\)',case_insensitive)"
+}
+
+type record IMAP_All_TEXT {
+} with {
+  variant "BEGIN('ALL',,case_insensitive)"
+}
+
+type record IMAP_Answered_TEXT {
+} with {
+  variant "BEGIN('ANSWERED',,case_insensitive)"
+}
+
+type IMAP_Astring IMAP_Bcc_TEXT with {
+  variant "BEGIN('BCC ',,case_insensitive)"
+}
+
+type record IMAP_BeforeSK {
+  IMAP_date date
+} with {
+  variant "BEGIN('BEFORE ',,case_insensitive)"
+}
+
+type IMAP_Astring IMAP_Body_TEXT with {
+  variant "BEGIN('BODY ',,case_insensitive)"
+}
+
+type IMAP_Astring IMAP_Cc_TEXT with {
+  variant "BEGIN('CC ',,case_insensitive)"
+}
+
+type record IMAP_Deleted_TEXT {
+} with {
+  variant "BEGIN('DELETED',,case_insensitive)"
+}
+
+type record IMAP_Flagged_TEXT {
+} with {
+  variant "BEGIN('FLAGGED',,case_insensitive)"
+}
+
+type IMAP_Astring IMAP_From_TEXT with {
+  variant "BEGIN('FROM ',,case_insensitive)"
+}
+
+type IMAP_Atom IMAP_Keyword_TEXT with {
+  variant "BEGIN('KEYWORD ',,case_insensitive)"
+}
+
+type record IMAP_New_TEXT {
+} with {
+  variant "BEGIN('NEW',,case_insensitive)"
+}
+
+type record IMAP_Old_TEXT {
+} with {
+  variant "BEGIN('OLD',,case_insensitive)"
+}
+
+type record IMAP_OnSK {
+  IMAP_date date 
+} with {
+  variant "BEGIN('ON ',,case_insensitive)"
+}
+
+type record IMAP_Recent_TEXT {
+} with {
+  variant "BEGIN('RECENT',,case_insensitive)"
+}
+
+type record IMAP_Seen_TEXT {
+} with {
+  variant "BEGIN('SEEN',,case_insensitive)"
+}
+
+type record IMAP_SinceSK {
+  IMAP_date date 
+} with {
+  variant "BEGIN('SINCE ',,case_insensitive)"
+}
+
+type IMAP_Astring IMAP_Subject_TEXT with {
+  variant "BEGIN('SUBJECT ',,case_insensitive)"
+}
+
+type IMAP_Astring IMAP_TextSpace_TEXT with {
+  variant "BEGIN('TEXT ',,case_insensitive)"
+}
+
+type IMAP_Astring IMAP_ToSpace_TEXT with {
+  variant "BEGIN('TO ',,case_insensitive)"
+}
+
+type record IMAP_Unanswered_TEXT {
+} with {
+  variant "BEGIN('UNANSWERED',,case_insensitive)"
+}
+
+type record IMAP_Undeleted_TEXT {
+} with {
+  variant "BEGIN('UNDELETED',,case_insensitive)"
+}
+
+type record IMAP_Unflagged_TEXT {
+} with {
+  variant "BEGIN('UNFLAGGED',,case_insensitive)"
+}
+
+type IMAP_Atom IMAP_Unkeyword_TEXT with {
+  variant "BEGIN('UNKEYWORD ',,case_insensitive)"
+}
+
+type record IMAP_Unseen_TEXT {
+} with {
+  variant "BEGIN('UNSEEN',,case_insensitive)"
+}
+
+type record IMAP_Draft_TEXT {
+} with {
+  variant "BEGIN('DRAFT',,case_insensitive)"
+}
+
+type record IMAP_HeaderSK {
+  IMAP_Astring 	header,
+  IMAP_Astring 	string
+} with {
+  variant "BEGIN('HEADER ',,case_insensitive)"
+  variant "SEPARATOR(' ')"
+}
+
+type integer IMAP_LargerSK with {
+  variant "BEGIN('LARGER ',,case_insensitive)"
+  variant "TEXT_CODING(,,'[0-9]#(1,)')"
+}
+
+type record IMAP_NotSK{
+  IMAP_SearchKey 	searchKey
+} with {
+  variant "BEGIN('NOT ',,case_insensitive)"
+}
+
+type record  IMAP_OrSK{
+  IMAP_SearchKey 	searchKey1,
+  IMAP_SearchKey 	searchKey2
+} with {
+  variant "BEGIN('OR ',,case_insensitive)"
+  variant (searchKey2) "BEGIN(' ',,case_insensitive)"
+}
+
+type record IMAP_SentBeforeSK {
+  IMAP_date 	date 
+} with {
+  variant "BEGIN('SENTBEFORE ',,case_insensitive)"
+}
+
+type record IMAP_SentOnSK {
+  IMAP_date 	date 
+} with {
+  variant "BEGIN('SENTON ',,case_insensitive)"
+}
+
+type record IMAP_SentSinceSK {
+  IMAP_date 	date 
+} with {
+  variant "BEGIN('SENTSINCE ',,case_insensitive)"
+}
+
+type integer IMAP_SmallerSK with {
+  variant "BEGIN('SMALLER ',,case_insensitive)"
+  variant "TEXT_CODING(,,'[0-9]#(1,)')"
+}
+
+type record IMAP_UidSK{
+  IMAP_SequenceSet 	sequenceSet
+} with {
+  variant "BEGIN('UID ',,case_insensitive)"
+}
+
+type record IMAP_Undraft_TEXT {
+} with {
+  variant "BEGIN('UNDRAFT',,case_insensitive)"
+}
+
+type set of IMAP_SearchKey IMAP_SearchKey_List with {
+  variant "SEPARATOR(' ')"
+}
+
+type set of IMAP_StatusAttr IMAP_StatusAttr_List with {
+  variant "SEPARATOR(' ')"
+}
+
+type union IMAP_StatusAttr{
+  IMAP_Message_TEXT 		messageText, 
+  IMAP_Recent_TEXT 		recentText, 
+  IMAP_UidNext_TEXT 		uidNextText, 
+  IMAP_UidValidity_TEXT 	uidValidityText, 
+  IMAP_Unseen_TEXT 		unseenText
+}
+
+type record IMAP_Message_TEXT {
+} with {
+  variant "BEGIN('MESSAGES',,case_insensitive)"
+}
+
+type record IMAP_UidValidity_TEXT {
+} with {
+  variant "BEGIN('UIDVALIDITY',,case_insensitive)"
+}
+
+type record IMAP_UidNext_TEXT {
+} with {
+  variant "BEGIN('UIDNEXT',,case_insensitive)"
+}
+
+type union IMAP_date{
+  IMAP_SimpleDate 	simple, 
+  IMAP_QuotedDate 	quoted
+}
+
+type record IMAP_SimpleDate{
+  IMAP_DoubleDigitList 	doubleDigitList,
+  IMAP_DateMonth 		dateMonth, 
+  IMAP_DateYear 		dateYear
+} with {
+  variant "SEPARATOR('-')"
+}
+
+type set of IMAP_DoubleDigit IMAP_DoubleDigitList;
+
+type record IMAP_QuotedDate {
+  IMAP_SimpleDate 	date
+}with {
+  variant "BEGIN('\"',,case_insensitive)"
+  variant "END('\"',,case_insensitive)"
+}
+
+type set of IMAP_SeqNumberOrRange IMAP_SequenceSet with {
+  variant "SEPARATOR(',')"
+}
+
+type union IMAP_SeqNumberOrRange {
+  charstring 	range, 
+  charstring 	number 
+} with {
+  variant (number) "TEXT_CODING(,,'[1-9]#(1,1)[0-9]#(,)|[\*]#1')"
+  variant (range) "TEXT_CODING(,,'([1-9]#(1,1)[0-9]#(,)|[\*]#1)[:]#1([1-9]#(1,1)[0-9]#(,)|[\*]#1)')"
+}
+
+type union IMAP_FetchArg{
+  IMAP_All_TEXT 		allText, 
+  IMAP_Full_TEXT 		fullText, 
+  IMAP_Fast_TEXT 		fastText, 
+  IMAP_FetchAtt 		fetchAtt,
+  IMAP_FetchAtt_List 	fetchAttList
+} with {
+  variant (fetchAttList) "BEGIN('(','\(',case_insensitive)"
+  variant (fetchAttList) "END(')','\)',case_insensitive)"
+}
+
+type record IMAP_Full_TEXT {
+} with {
+  variant "BEGIN('FULL',,case_insensitive)"
+}
+
+type record IMAP_Fast_TEXT {
+} with {
+  variant "BEGIN('FAST',,case_insensitive)"
+}
+
+type set of IMAP_FetchAtt IMAP_FetchAtt_List with {
+  variant "SEPARATOR(' ')";
+}
+
+type union IMAP_FetchAtt{
+  IMAP_Envelope_TEXT 		envelope, 
+  IMAP_Flags_TEXT 		flags, 
+  IMAP_InternalDate_TEXT 	internalDate, 
+  IMAP_Rfc822 			rfc,
+  IMAP_BodyPeek 		bodyPeek,
+  IMAP_Body 			body, 
+  IMAP_Uid_TEXT			uid 
+}
+
+type record IMAP_Envelope_TEXT {
+} with {
+  variant "BEGIN('ENVELOPE',,case_insensitive)"
+}
+
+type record IMAP_Flags_TEXT {
+} with {
+  variant "BEGIN('FLAGS',,case_insensitive)"
+}
+
+type record IMAP_InternalDate_TEXT {
+} with {
+  variant "BEGIN('INTERNALDATE',,case_insensitive)"
+}
+
+type record IMAP_Rfc822{
+  IMAP_Rfc822Extension 	rfc_extension
+} with {
+  variant "BEGIN('RFC822',,case_insensitive)"
+}
+
+type union IMAP_Rfc822Extension{
+  IMAP_DotHeader_TEXT 	header,
+  IMAP_DotSize_TEXT 	size,
+  IMAP_DotText_TEXT 	text
+}
+
+type record IMAP_DotHeader_TEXT {
+} with {
+  variant "BEGIN('.HEADER',,case_insensitive)"
+}
+
+type record IMAP_DotSize_TEXT {
+} with {
+  variant "BEGIN('.SIZE',,case_insensitive)"
+}
+
+type record IMAP_DotText_TEXT {
+} with {
+  variant "BEGIN('.TEXT',,case_insensitive)"
+}
+
+type union IMAP_Body {
+  IMAP_BodySection 		section,
+  IMAP_BodyStructure 	struct
+} with {
+  variant "BEGIN('BODY',,case_insensitive)"
+}
+
+type record IMAP_BodyStructure{
+  IMAP_Structure_TEXT struct optional
+}
+
+type record IMAP_Structure_TEXT {
+} with {
+  variant "BEGIN('STRUCTURE',,case_insensitive)"
+}
+
+type record IMAP_BodySection {
+  IMAP_Section 			section,
+  IMAP_SectionNumbers 	numbers optional 
+}
+
+type record IMAP_Section {
+  IMAP_SectionSpec spec optional
+} with {
+  variant "BEGIN('[',,case_insensitive)"
+  variant "END(']',,case_insensitive)"
+}
+
+type union IMAP_SectionSpec{
+  IMAP_SectionMsgText 		msgText, 
+  IMAP_SectionSpecPart		part 
+}
+
+type record IMAP_SectionSpecPart{
+  IMAP_DottedNZList 		sectionPart, 
+  IMAP_SectionText 	text optional 
+} with {
+  variant (text) "BEGIN('.',,case_insensitive)"
+}
+
+type set of IMAP_NZNumber IMAP_DottedNZList with {
+  variant  "SEPARATOR('.')"
+}
+
+type union IMAP_SectionText{
+  IMAP_SectionMsgText 		msgText,
+  IMAP_MIME 				mime
+}
+
+type record IMAP_MIME {
+} with {
+  variant "BEGIN('MIME',,case_insensitive)"
+}
+
+type union IMAP_SectionMsgText{
+  IMAP_HeaderFields headerFields, 
+  IMAP_Header_TEXT  header, 
+  IMAP_Text_TEXT text 
+}
+
+type record IMAP_Header_TEXT {
+} with{
+  variant "BEGIN('HEADER',,case_insensitive)"
+}
+
+type record IMAP_HeaderFields{
+  IMAP_DotNot_TEXT 	dotNot optional, 
+  IMAP_HeaderList 	headerList 
+} with {
+  variant "BEGIN('HEADER.FIELDS',,case_insensitive)"
+  variant (headerList) "BEGIN(' (',' \(',case_insensitive)"
+  variant (headerList) "END(')','\)',case_insensitive)"
+}
+
+type record IMAP_DotNot_TEXT {
+} with {
+  variant "BEGIN('.NOT',,case_insensitive)"
+}
+
+type set of IMAP_Astring IMAP_HeaderList with {
+  variant "SEPARATOR(' ',' ',case_insensitive)"
+}
+
+type charstring IMAP_Astring with {
+  variant "TEXT_CODING(,,'([^\)\(\q{0,0,0,10}\q{0,0,0,13}\{\*%\"\\ ]#(1,))|([\"]#1[^\q{0,0,0,10}\q{0,0,0,13}\"]#(,)[\"]#1)|([\{]#1[0-9]#(1,)[\}]#1[\q{0,0,0,13}]#1[\q{0,0,0,10}]#1[\q{0,0,0,1}-\q{0,0,0,127}]#(,))')" //simplified
+}
+
+type record IMAP_Text_TEXT {
+} with{
+  variant "BEGIN('TEXT',,case_insensitive)"
+}
+
+type record IMAP_SectionNumbers{
+  integer 	number,
+  integer 	nz_number
+} with {
+  variant "BEGIN('<',,case_insensitive)"
+  variant "END('>',,case_insensitive)"
+  variant (number) "TEXT_CODING(,,'[0-9]#(1,)')"
+  variant (nz_number) "TEXT_CODING(,,'[1-9]#(1,1)[1-9]#(,)')"
+  variant "SEPARATOR('.')"
+}
+
+type record IMAP_BodyPeek{
+  IMAP_Section 			section,
+  IMAP_SectionNumbers 	numbers optional 
+} with {
+  variant "BEGIN('BODY.PEEK',,case_insensitive)"
+}
+
+type record IMAP_Uid_TEXT {
+} with{
+  variant "BEGIN('UID',,case_insensitive)"
+}
+
+type record IMAP_StoreAttrFlags{
+  IMAP_PlusOrMinus_TEXT 	plusOrMinus optional, 
+  IMAP_Flags_TEXT 			flags,
+  IMAP_DotSilent_TEXT 		silent optional, 
+  IMAP_FlagsUnion 			flagsUnion
+} with {
+  variant (flagsUnion) "BEGIN(' ',' ',case_insensitive)"
+}
+
+type union IMAP_FlagsUnion{
+  IMAP_FlagList 	flagList,
+  IMAP_Flags 		flags
+}
+
+type charstring IMAP_PlusOrMinus_TEXT with{
+  variant "TEXT_CODING(,,'[-+]#(1,1)')"
+}
+
+type record IMAP_DotSilent_TEXT {
+} with {
+  variant "BEGIN('.SILENT',,case_insensitive)"
+}
+
+type set of IMAP_Base64 IMAP_Base64_List with {
+  variant "BEGIN('\r\n',,case_insensitive)"
+}
+
+type record IMAP_Base64{
+  IMAP_4Base64_List 	base64 optional,
+  IMAP_BaseTerminal	baseTerminal optional
+} 
+
+type set of charstring IMAP_4Base64_List with {
+  variant "TEXT_CODING(,,'[0-9a-zA-Z+/]#4',case_sensitive)"
+}
+
+type union IMAP_BaseTerminal{
+  charstring 	base2,
+  charstring	base3
+} with {
+  variant (base2) "TEXT_CODING(,,'[0-9a-zA-Z+/]#2[=]#2')"
+  variant (base3) "TEXT_CODING(,,'[0-9a-zA-Z+/]#3[=]#1')"
+}
+
+type record IMAP_Literal{
+  integer number,
+  IMAP_Char8_List char8List optional
+} with {
+  variant (number) "BEGIN(' {',' \{',case_insensitive)"
+  variant (number) "TEXT_CODING(,,'[0-9]#(1,)')"
+  variant (number) "END('}',,case_insensitive)"
+}
+
+type set of octetstring IMAP_Char8_List with {
+  variant "BEGIN('\r\n',,case_insensitive)"
+  variant "TEXT_CODING(,,'[^\0]#1')" 
+}
+
+type union IMAP_Response{
+  IMAP_ResponseSequence   sequence,
+  IMAP_ResponseTagged     tagged
+}
+
+type set length(1..infinity) of IMAP_ResponseMessage IMAP_Message_List;
+
+type record IMAP_ResponseSequence{
+  IMAP_Message_List   messages,
+  IMAP_ResponseTagged tagged optional
+}
+
+type union IMAP_ResponseMessage {
+  IMAP_ContinueReq 		continueRequest, 
+  IMAP_Untagged		 	statusMessage  
+}
+
+type union IMAP_ContinueReq {
+  IMAP_RespText text, 
+  IMAP_Base64 	base64
+} with {
+  variant "BEGIN('+ ','\+ ',case_insensitive)"
+  variant "END('\r\n',,case_insensitive)"
+}
+
+type record IMAP_RespText {
+  IMAP_RespTextCode textCode optional, 
+  IMAP_Text text 
+} with {
+  variant (textCode) "BEGIN('[','\[',case_insensitive)"
+  variant (textCode) "END(']','\]',case_insensitive)"
+  variant "SEPARATOR(' ',,case_insensitive)"
+}
+
+type union IMAP_RespTextCode {
+  IMAP_Alert_TEXT 			alertText, 
+  IMAP_BadCharset 			badcharset, 
+  IMAP_CapabilityData 		capabiltyData, 
+  IMAP_Parse_TEXT 			parseText, 
+  IMAP_PermanentFlags 		permFlags, 
+  IMAP_ReadOnly_TEXT		readOnlyText, 
+  IMAP_ReadWrite_TEXT		readWriteText, 
+  IMAP_TryCreate_TEXT		tryCreateText, 
+  IMAP_UidNext				uidNext, 
+  IMAP_UidValidity			uidValidity, 
+  IMAP_Unseen				unseen, 
+  IMAP_RespTextCodeString	string 
+}
+
+type union IMAP_ResponseDone {
+  IMAP_ResponseTagged 	tagged, 
+  IMAP_ResponseFatal 	fatal   
+}
+
+type record IMAP_Alert_TEXT {
+} with {
+  variant "BEGIN('ALERT','ALERT')"
+}
+
+type record IMAP_BadCharset{
+  IMAP_Astring_List list optional
+} with {
+  variant "BEGIN('BADCHARSET','BADCHARSET',case_insensitive)"
+  variant (list) "BEGIN('( ','\( ')"
+  variant (list) "END(')','\)')"
+}
+
+type set of IMAP_Astring IMAP_Astring_List with{
+  variant "SEPARATOR(' ')"
+}
+
+type record IMAP_CapabilityData {
+  IMAP_CapabilityUnion 	cap
+} with {
+  variant "BEGIN('CAPABILITY','CAPABILITY',case_insensitive)"
+}
+
+type union IMAP_CapabilityUnion{
+  IMAP_StartsWithIMAP4rev1	imap4rev1,
+  IMAP_NotYetIMAP4rev1		notYet
+}
+
+type record IMAP_StartsWithIMAP4rev1{
+  IMAP_Imap4Rev1_TEXT 		imap4rev1,
+  IMAP_Capability_List		list optional
+} with {
+  variant "BEGIN(' ',' ',case_insensitive)"
+  variant (list) "BEGIN(' ',' ',case_insensitive)"
+}
+
+type record IMAP_NotYetIMAP4rev1{
+  IMAP_Capability			capability,
+  IMAP_CapabilityUnion		capUnion
+} with {
+  variant "BEGIN(' ',' ',case_insensitive)"
+}
+
+type record IMAP_Imap4Rev1_TEXT{
+} with {
+  variant "BEGIN('IMAP4rev1','IMAP4rev1',case_insensitive)"
+}
+
+type set of IMAP_Capability IMAP_Capability_List with {
+  variant "SEPARATOR(' ',' ',case_insensitive)"
+}
+
+type union IMAP_Capability{
+  IMAP_Atom authString,
+  IMAP_Atom string
+} with {
+  variant (authString) "BEGIN('AUTH=','AUTH=',case_insensitive)"
+}
+
+type charstring IMAP_Atom with{
+ variant "TEXT_CODING(,,'[!#$&-\'+-\[\^-z|-~]#(1,)')"
+}
+
+type record IMAP_Parse_TEXT{
+} with {
+  variant "BEGIN('PARSE','PARSE')"
+}
+
+type record IMAP_ReadOnly_TEXT{
+} with {
+  variant "BEGIN('READ-ONLY','READ-ONLY',case_insensitive)"
+}
+
+type record IMAP_ReadWrite_TEXT{
+} with {
+  variant "BEGIN('READ-WRITE','READ-WRITE',case_insensitive)"
+}
+
+type record IMAP_TryCreate_TEXT{
+} with {
+  variant "BEGIN('TRYCREATE','TRYCREATE',case_insensitive)"
+  }
+  
+type record IMAP_UidNext{
+  integer number
+} with {
+  variant "BEGIN('UIDNEXT ')"
+  variant (number) "TEXT_CODING(,,'[1-9]#(1,1)[0-9]#(,)')"
+}
+
+type record IMAP_UidValidity{
+  integer number
+} with {
+  variant "BEGIN('UIDVALIDITY ')"
+  variant (number) "TEXT_CODING(,,'[1-9]#(1,1)[0-9]#(,)')"
+}
+
+type record IMAP_Unseen{
+  integer number
+} with {
+  variant "BEGIN('UNSEEN ')"
+  variant (number) "TEXT_CODING(,,'[1-9]#(1,1)[0-9]#(,)')"
+}
+
+type record IMAP_PermanentFlags{
+  IMAP_FlagPerm_List flagPermList optional
+} with {
+  variant "BEGIN('PERMANENTFLAGS (','PERMANENTFLAGS \(')"
+  variant "END(')','\)')"
+}
+
+type set of IMAP_FlagPerm IMAP_FlagPerm_List with {
+  variant "SEPARATOR(' ')"
+}
+
+type union flagPermList{
+  IMAP_Flag flag,
+  IMAP_RecentFlag_TEXT recent
+}
+
+type record IMAP_RecentFlag_TEXT{
+} with {
+  variant "BEGIN('\\Recent','\\Recent',case_insensitive)"
+}
+
+type record IMAP_RespTextCodeString{
+  IMAP_Atom		atom,
+  charstring	string
+} with {
+  variant "SEPARATOR(' ')"
+  variant (string) "TEXT_CODING(,,'[^\q{0,0,0,10}\q{0,0,0,13}\]]#(1,)')"
+}
+
+type record IMAP_ResponseTagged{
+  IMAP_Tag tag,
+  IMAP_RespCondState state 
+} with {
+  variant "SEPARATOR(' ')"
+  variant "END('\r\n', '\r\n', case_insensitive)"
+}
+
+type record IMAP_ResponseFatal{
+  IMAP_RespCondBye bye 
+} with {
+  variant "BEGIN('*','\* ',case_insensitive)"
+  variant "END('\r\n','\r\n', case_insensitive)"
+}
+
+type record IMAP_RespCondState{
+  IMAP_CondState	state,
+  IMAP_RespText 	text
+} with {
+  variant "SEPARATOR(' ')"
+}
+
+type union IMAP_CondState{
+  IMAP_Ok_TEXT 	okText, 
+  IMAP_No_TEXT	noText, 
+  IMAP_Bad_TEXT badText
+}
+
+type record IMAP_Ok_TEXT{
+} with {
+  variant "BEGIN('OK','OK',case_insensitive)"
+}
+
+type record IMAP_No_TEXT{
+} with {
+  variant "BEGIN('NO','NO',case_insensitive)"
+}
+
+type record IMAP_Bad_TEXT{
+} with {
+  variant "BEGIN('BAD','BAD',case_insensitive)"
+}
+
+type record IMAP_RespCondBye{
+  IMAP_RespText text
+} with {
+  variant "BEGIN('BYE ','BYE ',case_insensitive)"
+}
+
+type charstring IMAP_Text with{
+  variant "TEXT_CODING(,,'[^\q{0,0,0,10}\q{0,0,0,13}]#(1,)')"
+}
+
+type union IMAP_Untagged{
+  IMAP_RespCondState 	state,
+  IMAP_RespCondBye 		bye,
+  IMAP_MailboxData 		mailbox, 
+  IMAP_MessageData		msg, 
+  IMAP_CapabilityData	cap
+} with {
+  variant "BEGIN('* ','\* ', case_insensitive)"
+  variant "END('\r\n','\r\n', case_insensitive)"
+}
+
+type union IMAP_FlagPerm{
+  IMAP_Flag 				flag,
+  IMAP_BackslashStar_TEXT 	backslashstar
+}
+
+type record IMAP_BackslashStar_TEXT{
+} with {
+	variant "BEGIN('\\*','\\\*',case_insensitive)"
+}
+ 
+// not allowed: "+" / "(" / ")" / "{" / SP /controls / "%" / "*" / """ / "\" 
+type charstring IMAP_Tag with{
+  variant "TEXT_CODING(,,'[!#$&\',-\[\]-z\|-~]#(1,)')"
+}
+
+type union IMAP_MailboxData{
+  IMAP_FlagList 	flagList,
+  IMAP_MailboxList 	listMailboxList, 
+  IMAP_MailboxList 	lsubMailboxList,
+  IMAP_Search		search,
+  IMAP_Status		status, 
+  integer			exists, 
+  integer			recent
+} with {
+  variant (flagList) "BEGIN('FLAGS (','FLAGS \(',case_insensitive)"
+  variant (listMailboxList) "BEGIN('LIST ','LIST ',case_insensitive)"
+  variant (lsubMailboxList) "BEGIN('LSUB ','LSUB ',case_insensitive)"
+  variant (search) "BEGIN('SEARCH','SEARCH',case_insensitive)"
+  variant (exists) "END(' EXISTS',' EXISTS',case_insensitive)"
+  variant (exists) "TEXT_CODING(,,'[0-9]#(1,)')"
+  variant (recent) "END(' RECENT',' RECENT',case_insensitive)"
+  variant (recent) "TEXT_CODING(,,'[0-9]#(1,)')"
+}
+
+type record IMAP_Status{
+  IMAP_Mailbox 			mailbox,
+  IMAP_StatusAttrList 	attList optional
+} with {
+  variant "BEGIN('STATUS ','STATUS ',case_insensitive)"
+  variant "SEPARATOR(' (',,case_insensitive)"
+  variant "END(')','\)',case_insensitive)"
+}
+
+type record IMAP_MailboxList{
+  charstring flags optional, //simplified
+  IMAP_MbxFlagsString 	string, 
+  IMAP_Mailbox 			mailbox
+} with {
+  variant "SEPARATOR(' ')"
+  variant (flags) "BEGIN('(',,case_insensitive)"
+  variant (flags) "END(')',,case_insensitive)"
+//  variant (flags) "TEXT_CODING(,,'[^\q{0,0,0,10}\q{0,0,0,13}\)\(\*%\"\]]#(1,)')"
+}
+
+type union IMAP_MbxFlagsString{
+  IMAP_Nil_TEXT nil, 
+  charstring 	quoted
+} with {
+  //DQUOTE QUOTED-CHAR DQUOTE, DQUOTE := ", QUOTED-CHAR := (any char but quoted specials)| "\" quoted specials, quoted specials = "\" | DQUOTE
+  // "(any char | \ quoted spec)"
+  variant (quoted) "BEGIN('\"')"
+  variant (quoted) "TEXT_CODING(,,'([^\"]|(\\\"))#(,)')"
+  variant (quoted) "END('\"')"
+}
+
+type record IMAP_Nil_TEXT{
+} with {
+  variant "BEGIN('NIL','NIL',case_insensitive)"
+}
+
+type record IMAP_StatusAttr_Number{
+  IMAP_StatusAttr 	attr,
+  IMAP_Number 		number
+} with {
+  variant (attr) "END(' ')"
+}
+
+type set of IMAP_StatusAttr_Number IMAP_StatusAttrList with {
+  variant "SEPARATOR(' ')"
+}
+
+type record IMAP_Search{
+  IMAP_NZ_List	list optional
+} with {
+  variant "BEGIN('SEARCH','SEARCH',case_insensitive)"
+  variant (list) "BEGIN(' ',' ')"
+}
+
+type set of IMAP_NZNumber IMAP_NZ_List with {
+  variant "SEPARATOR(' ')"
+}
+
+type record IMAP_MessageData{
+  integer 				number,
+  IMAP_MessageDataLoad 	load 
+} with {
+  variant (number) "TEXT_CODING(,,'[1-9]#1[0-9]#(,)')"
+  variant "SEPARATOR(' ')"
+}
+
+type union IMAP_MessageDataLoad{
+  IMAP_Expunge_TEXT expunge, 
+  charstring		fetch  //simplified
+} with {
+  variant (fetch) "BEGIN('FETCH ','FETCH ',case_insensitive)"
+  variant (fetch) "TEXT_CODING(,,'(([^\q{0,0,0,13}]#(,))|([\q{0,0,0,13}]#1[^\q{0,0,0,10}]#1)|(([\q{0,0,0,13}]#1[\q{0,0,0,10}]#1)#(1,)[\q{0,0,0,1}-\q{0,0,0,127}]#1))#(1,)')"
+}
+
+type record IMAP_Expunge_TEXT{
+} with {
+ variant "BEGIN('EXPUNGE','EXPUNGE',case_insensitive)"
+}
+
+type union IMAP_Greeting{
+  IMAP_RespCondAuth 	auth,
+  IMAP_RespCondBye 		bye 
+} with {
+  variant "BEGIN('* ','\* ',case_insensitive)"
+  variant "END('\r\n','\r\n', case_insensitive)"
+}
+
+type record IMAP_RespCondAuth{
+  IMAP_Auth 	auth,
+  IMAP_RespText	text
+} with {
+  variant "SEPARATOR(' ')"
+}
+
+type union IMAP_Auth{
+  IMAP_Ok_TEXT			ok,
+  IMAP_Preauth_TEXT		auth
+}
+
+type record IMAP_Preauth_TEXT{
+} with {
+  variant "BEGIN('PREAUTH','PREAUTH',case_insensitive)"
+}
+
+type integer IMAP_Number with{
+  variant "TEXT_CODING(,,'[0-9]#(1,)')"  
+}
+
+type integer IMAP_NZNumber with{
+  variant "TEXT_CODING(,,'[1-9]#(1,1)[0-9]#(,)')"
+}
+
+//end of module
+} with { encode "TEXT" }
+

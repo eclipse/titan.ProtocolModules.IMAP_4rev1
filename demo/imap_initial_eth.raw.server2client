@@ -1,0 +1,39 @@
+* OK Microsoft Exchange Server 2003 IMAP4rev1 server version 6.5.7638.1 (esealmw119.eemea.ericsson.se) ready.
+* CAPABILITY IMAP4 IMAP4rev1 IDLE LOGIN-REFERRALS MAILBOX-REFERRALS NAMESPACE LITERAL+ UIDPLUS CHILDREN
+0 OK CAPABILITY completed.
+1 OK LOGIN completed.
+* NAMESPACE (("" "/")) NIL NIL
+2 OK NAMESPACE completed.
+* LIST (\Noselect) "/" ""
+3 OK LIST completed.
+* LIST (\Marked \HasNoChildren) "/" Calendar
+* LIST (\HasNoChildren) "/" Contacts
+* LIST (\HasNoChildren) "/" "Deleted Items"
+* LIST (\HasNoChildren) "/" Drafts
+* LIST (\Marked \HasNoChildren) "/" INBOX
+* LIST (\HasNoChildren) "/" Journal
+* LIST (\HasNoChildren) "/" "Junk E-mail"
+* LIST (\HasNoChildren) "/" Notes
+* LIST (\HasNoChildren) "/" Outbox
+* LIST (\HasNoChildren) "/" "Personal mails"
+* LIST (\HasNoChildren) "/" "Sent Items"
+* LIST (\HasChildren) "/" "Sync Issues"
+* LIST (\HasNoChildren) "/" Tasks
+4 OK LIST completed.
+7 OK LIST completed.
+8 OK LIST completed.
+9 OK LIST completed.
+10 OK LIST completed.
+11 OK LIST completed.
+12 OK LIST completed.
+13 OK LIST completed.
+14 OK LIST completed.
+15 OK LIST completed.
+* LIST (\HasNoChildren) "/" "Sync Issues/Conflicts"
+* LIST (\HasNoChildren) "/" "Sync Issues/Local Failures"
+* LIST (\HasNoChildren) "/" "Sync Issues/Server Failures"
+16 OK LIST completed.
+17 OK LIST completed.
+18 OK LIST completed.
+19 OK LIST completed.
+20 OK LIST completed.

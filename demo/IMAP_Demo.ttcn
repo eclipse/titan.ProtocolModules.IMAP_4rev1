@@ -1,0 +1,506 @@
+/******************************************************************************
+* Copyright (c) 2005, 2015  Ericsson AB
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+* Tibor Bende
+* Gábor Ziegler
+* Gabor Szalai
+******************************************************************************/
+//
+//  File:     IMAP_Demo.ttcn
+//  Rev:      R3A
+//  Prodnr:   CNL 113 660
+///////////////////////////////////////////////////////////////////////////////
+module IMAP_Demo{
+  import from IMAP_Types all;
+
+  type record of integer ro_integer;
+  
+  //function suitable to use with IPL4 testport, as a IMAP Response length determinator
+  external function f_IMAP_getMsgLen(
+    in octetstring stream,
+    inout ro_integer args
+  ) return integer;
+
+  
+  template IMAP_ServerResponse tr_unrecognizedResponse :={
+    unrecognized := ?
+  }
+  
+  template IMAP_ClientCommand tr_unrecognizedCommand :={
+    unrecognized := ?
+  };
+  
+
+  type component IMAP_Server{
+  }
+  
+  
+
+  
+  testcase IMAP_demo_Command_1() runs on IMAP_Server{
+
+    var charstring vl_enc_imapcommand := "a0000001 LOGIN user00 password00\r\n";
+    
+    var IMAP_ClientCommand vl_decIMAPComm := textdec_IMAP_Command(vl_enc_imapcommand);
+    log("Decoded command charstring: ", vl_decIMAPComm);
+	
+	var IMAP_PDU vl_imapPDU := { command := vl_decIMAPComm };
+	
+	var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+	
+	if( vl_enc_imapcommand == vl_encIMAP){
+	  if(match(vl_decIMAPComm, tr_unrecognizedCommand)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+    
+  }
+  
+  
+  testcase IMAP_demo_Command_2() runs on IMAP_Server{
+
+    var charstring vl_enc_imapcommand := "a0000002 SELECT INBOX\r\n";
+
+    var IMAP_ClientCommand vl_decIMAPComm := textdec_IMAP_Command(vl_enc_imapcommand);
+    log("Decoded command charstring: ", vl_decIMAPComm);
+	
+	var IMAP_PDU vl_imapPDU := { command := vl_decIMAPComm };
+	
+	var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+	
+    if( vl_enc_imapcommand == vl_encIMAP){
+	  if(match(vl_decIMAPComm, tr_unrecognizedCommand)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+    
+  }
+  
+  
+  testcase IMAP_demo_Command_3() runs on IMAP_Server{
+
+    var charstring vl_enc_imapcommand := "a0000003 UID FETCH 1:2 (BODY.PEEK[])\r\n";
+
+    var IMAP_ClientCommand vl_decIMAPComm := textdec_IMAP_Command(vl_enc_imapcommand);
+    log("Decoded command charstring: ", vl_decIMAPComm);
+	
+	var IMAP_PDU vl_imapPDU := { command := vl_decIMAPComm };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+	
+
+    if( vl_enc_imapcommand == vl_encIMAP){
+	  if(match(vl_decIMAPComm, tr_unrecognizedCommand)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }    
+  }
+  
+  
+  testcase IMAP_demo_Command_4() runs on IMAP_Server{
+
+    var charstring vl_enc_imapcommand := "1 CAPABILITY\r\n";
+
+    var IMAP_ClientCommand vl_decIMAPComm := textdec_IMAP_Command(vl_enc_imapcommand);
+    log("Decoded command charstring: ", vl_decIMAPComm);
+	
+	var IMAP_PDU vl_imapPDU := { command := vl_decIMAPComm };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+	
+
+    if( vl_enc_imapcommand == vl_encIMAP){
+	  if(match(vl_decIMAPComm, tr_unrecognizedCommand)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+    
+  }
+  
+  
+  testcase IMAP_demo_Command_5() runs on IMAP_Server{
+
+    var charstring vl_enc_imapcommand := "3 SELECT \"INBOX/chat\"\r\n";
+
+    var IMAP_ClientCommand vl_decIMAPComm := textdec_IMAP_Command(vl_enc_imapcommand);
+    log("Decoded command charstring: ", vl_decIMAPComm);
+	
+	var IMAP_PDU vl_imapPDU := { command := vl_decIMAPComm };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+	
+
+    if( vl_enc_imapcommand == vl_encIMAP){
+	  if(match(vl_decIMAPComm, tr_unrecognizedCommand)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+    
+  }
+  
+  
+  testcase IMAP_demo_Command_6() runs on IMAP_Server{
+
+    var charstring vl_enc_imapcommand := "4 UID FETCH 1:* (FLAGS)\r\n";
+
+    var IMAP_ClientCommand vl_decIMAPComm := textdec_IMAP_Command(vl_enc_imapcommand);
+    log("Decoded command charstring: ", vl_decIMAPComm);
+	
+	var IMAP_PDU vl_imapPDU := { command := vl_decIMAPComm };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+	
+
+    if( vl_enc_imapcommand == vl_encIMAP){
+	  if(match(vl_decIMAPComm, tr_unrecognizedCommand)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+    
+  }
+  
+  
+  testcase IMAP_demo_Command_7() runs on IMAP_Server{
+
+    var charstring vl_enc_imapcommand := "5 UID FETCH 1:23,25 (UID RFC822.SIZE FLAGS BODY.PEEK[HEADER.FIELDS (From To Cc Subject Date Message-ID Priority X-Priority References Newsgroups In-Reply-To Content-Type)])\r\n";
+
+    var IMAP_ClientCommand vl_decIMAPComm := textdec_IMAP_Command(vl_enc_imapcommand);
+    log("Decoded command charstring: ", vl_decIMAPComm);
+	
+	var IMAP_PDU vl_imapPDU := { command := vl_decIMAPComm };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+	
+
+    if( vl_enc_imapcommand == vl_encIMAP){
+	  if(match(vl_decIMAPComm, tr_unrecognizedCommand)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+    
+  }
+  
+  
+  testcase IMAP_demo_Response_1() runs on IMAP_Server{
+
+	var charstring vl_enc_imapresp := "* OK Welcome to IXIA IMAP4rev1 server.\r\n";
+
+    var IMAP_ServerResponse vl_decIMAPResp := textdec_IMAP_Response(vl_enc_imapresp);
+    log("Decoded response charstring: ", vl_decIMAPResp);
+	
+	var IMAP_PDU vl_imapPDU := { response := vl_decIMAPResp };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+	
+    if( vl_enc_imapresp == vl_encIMAP){
+	  if(match(vl_decIMAPResp, tr_unrecognizedResponse)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+    
+  }
+  
+  
+  testcase IMAP_demo_Response_2() runs on IMAP_Server{
+
+	var charstring vl_enc_imapresp := "a0000001 OK LOGIN completed\r\n";
+
+    var IMAP_ServerResponse vl_decIMAPResp := textdec_IMAP_Response(vl_enc_imapresp);
+    log("Decoded response charstring: ", vl_decIMAPResp);
+	
+	var IMAP_PDU vl_imapPDU := { response := vl_decIMAPResp };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+	
+
+    if( vl_enc_imapresp == vl_encIMAP){
+	  if(match(vl_decIMAPResp, tr_unrecognizedResponse)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+    
+  }
+ 
+ 
+  testcase IMAP_demo_Response_3() runs on IMAP_Server{
+
+    var charstring vl_enc_imapresp := "* 1 EXISTS\r\n* 1 RECENT\r\n* OK [UNSEEN 2] a\r\n* OK [UIDVALIDITY 1] a\r\n* OK [UIDNEXT 2] Next UID\r\n* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)\r\n* OK [PERMANENTFLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)] a\r\na0000002 OK [READ-WRITE] SELECT completed\r\n";
+	
+    var IMAP_ServerResponse vl_decIMAPResp := textdec_IMAP_Response(vl_enc_imapresp);
+    log("Decoded response charstring: ", vl_decIMAPResp);
+	
+	var IMAP_PDU vl_imapPDU := { response := vl_decIMAPResp };
+	
+	var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+	
+    log("Encoded pdu: ", vl_encIMAP);
+	
+
+    if( vl_enc_imapresp == vl_encIMAP){
+	  if(match(vl_decIMAPResp, tr_unrecognizedResponse)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+    
+  }
+  
+ 
+  testcase IMAP_demo_Response_4() runs on IMAP_Server{
+
+  	var charstring vl_enc_imapresp := "* OK Microsoft Exchange Server 2003 IMAP4rev1 server version 6.5.7638.1 (esealmw119.eemea.ericsson.se) ready.\r\n";
+
+    var IMAP_ServerResponse vl_decIMAPResp := textdec_IMAP_Response(vl_enc_imapresp);
+    log("Decoded response charstring: ", vl_decIMAPResp);
+	
+	var IMAP_PDU vl_imapPDU := { response := vl_decIMAPResp };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+
+    if( vl_enc_imapresp == vl_encIMAP){
+	  if(match(vl_decIMAPResp, tr_unrecognizedResponse)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+  }
+  
+  testcase IMAP_demo_Response_5() runs on IMAP_Server{
+
+  	var charstring vl_enc_imapresp := "* CAPABILITY IMAP4 IMAP4rev1 IDLE LOGIN-REFERRALS MAILBOX-REFERRALS NAMESPACE LITERAL+ UIDPLUS CHILDREN\r\n1 OK CAPABILITY completed.\r\n";
+
+    var IMAP_ServerResponse vl_decIMAPResp := textdec_IMAP_Response(vl_enc_imapresp);
+    log("Decoded response charstring: ", vl_decIMAPResp);
+	
+	var IMAP_PDU vl_imapPDU := { response := vl_decIMAPResp };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+
+    if( vl_enc_imapresp == vl_encIMAP){
+	  if(match(vl_decIMAPResp, tr_unrecognizedResponse)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+  }
+  
+  testcase IMAP_demo_Response_6() runs on IMAP_Server{
+
+  	var charstring vl_enc_imapresp := "2 OK LOGIN completed.\r\n";
+
+    var IMAP_ServerResponse vl_decIMAPResp := textdec_IMAP_Response(vl_enc_imapresp);
+    log("Decoded response charstring: ", vl_decIMAPResp);
+	
+	var IMAP_PDU vl_imapPDU := { response := vl_decIMAPResp };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+
+    if( vl_enc_imapresp == vl_encIMAP){
+	  if(match(vl_decIMAPResp, tr_unrecognizedResponse)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+  }
+  
+  testcase IMAP_demo_Response_7() runs on IMAP_Server{
+
+  	var charstring vl_enc_imapresp := "* 24 EXISTS\r\n* 24 RECENT\r\n* FLAGS (\\Seen \\Answered \\Flagged \\Deleted \\Draft $MDNSent)\r\n* OK [PERMANENTFLAGS (\\Seen \\Answered \\Flagged \\Deleted \\Draft $MDNSent)] Permanent flags\r\n* OK [UIDVALIDITY 310752] UIDVALIDITY value\r\n3 OK [READ-WRITE] SELECT completed.\r\n";
+
+    var IMAP_ServerResponse vl_decIMAPResp := textdec_IMAP_Response(vl_enc_imapresp);
+    log("Decoded response charstring: ", vl_decIMAPResp);
+	
+	var IMAP_PDU vl_imapPDU := { response := vl_decIMAPResp };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+
+    if( vl_enc_imapresp == vl_encIMAP){
+	  if(match(vl_decIMAPResp, tr_unrecognizedResponse)){
+		setverdict(fail);
+	  }
+      else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+  }
+  
+  testcase IMAP_demo_Response_8() runs on IMAP_Server{
+
+  	var charstring vl_enc_imapresp := "* 1 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 1)\r\n* 2 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 2)\r\n* 3 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 3)\r\n* 4 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 4)\r\n* 5 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 5)\r\n* 6 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 6)\r\n* 7 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 7)\r\n* 8 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 8)\r\n* 9 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 9)\r\n* 10 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 10)\r\n* 11 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 11)\r\n* 12 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 12)\r\n* 13 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 13)\r\n* 14 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 14)\r\n* 15 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 15)\r\n* 16 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 16)\r\n* 17 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 17)\r\n* 18 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 18)\r\n* 19 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 19)\r\n* 20 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 20)\r\n* 21 FETCH (FLAGS (\\Seen \\Recent) UID 21)\r\n* 22 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 22)\r\n* 23 FETCH (FLAGS (\\Seen \\Recent) UID 23)\r\n* 24 FETCH (FLAGS (\\Seen \\Answered \\Recent) UID 25)\r\n4 OK FETCH completed.\r\n";
+
+    var IMAP_ServerResponse vl_decIMAPResp := textdec_IMAP_Response(vl_enc_imapresp);
+    log("Decoded response charstring: ", vl_decIMAPResp);
+	
+	var IMAP_PDU vl_imapPDU := { response := vl_decIMAPResp };
+	
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+	
+	
+
+    if( vl_enc_imapresp == vl_encIMAP){
+	  if(match(vl_decIMAPResp, tr_unrecognizedResponse)){
+		setverdict(fail);
+	  }
+	  else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+  }
+  
+  testcase IMAP_demo_Response_9() runs on IMAP_Server{
+
+  	var charstring vl_enc_imapresp := "* LIST (\\HasNoChildren) \"/\" Prueba\r\n";
+
+    var IMAP_ServerResponse vl_decIMAPResp := textdec_IMAP_Response(vl_enc_imapresp);
+    log("Decoded response charstring: ", vl_decIMAPResp);
+
+	var IMAP_PDU vl_imapPDU := { response := vl_decIMAPResp };
+
+    var charstring vl_encIMAP := textenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+
+
+
+    if( vl_enc_imapresp == vl_encIMAP){
+	  if(match(vl_decIMAPResp, tr_unrecognizedResponse)){
+		setverdict(fail);
+	  }
+	  else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+  }
+
+  testcase IMAP_demo_Response_10() runs on IMAP_Server{
+    var octetstring vl_imapResp_Octet := '2a2030204558495354530d0a2a203020524543454e540d0a2a20464c41475320285c5365656e205c416e737765726564205c466c6167676564205c44656c65746564205c447261667420244d444e53656e74290d0a2a204f4b205b5045524d414e454e54464c41475320285c5365656e205c416e737765726564205c466c6167676564205c44656c65746564205c447261667420244d444e53656e74295d205065726d616e656e7420666c6167730d0a'O;
+  
+    var IMAP_ServerResponse vl_decIMAPResp := octdec_IMAP_Response(vl_imapResp_Octet);
+    log("Decoded response charstring: ", vl_decIMAPResp);
+	
+	var IMAP_PDU vl_imapPDU := { response := vl_decIMAPResp };
+	
+    var octetstring vl_encIMAP := octenc_IMAP_PDU(vl_imapPDU);
+    log("Encoded pdu: ", vl_encIMAP);
+	
+	
+
+    if( vl_imapResp_Octet == vl_encIMAP){
+	  if(match(vl_decIMAPResp, tr_unrecognizedResponse)){
+		setverdict(fail);
+	  }
+	  else{
+        setverdict(pass);
+	  }
+    }else{
+      setverdict(fail);
+    }
+  }
+ 
+  
+  control {
+	var verdicttype vl_verdictCommand1 := execute(IMAP_demo_Command_1());
+	var verdicttype vl_verdictCommand2 := execute(IMAP_demo_Command_2());
+	var verdicttype vl_verdictCommand3 := execute(IMAP_demo_Command_3());
+	var verdicttype vl_verdictCommand4 := execute(IMAP_demo_Command_4());
+	var verdicttype vl_verdictCommand5 := execute(IMAP_demo_Command_5());
+	var verdicttype vl_verdictCommand6 := execute(IMAP_demo_Command_6());
+	var verdicttype vl_verdictCommand7 := execute(IMAP_demo_Command_7()); 
+	var verdicttype vl_verdictResponse1 := execute(IMAP_demo_Response_1());
+	var verdicttype vl_verdictResponse2 := execute(IMAP_demo_Response_2());
+	var verdicttype vl_verdictResponse3 := execute(IMAP_demo_Response_3());
+	var verdicttype vl_verdictResponse4 := execute(IMAP_demo_Response_4());
+	var verdicttype vl_verdictResponse5 := execute(IMAP_demo_Response_5());
+	var verdicttype vl_verdictResponse6 := execute(IMAP_demo_Response_6());
+	var verdicttype vl_verdictResponse7 := execute(IMAP_demo_Response_7());
+        var verdicttype vl_verdictResponse8 := execute(IMAP_demo_Response_8());
+        var verdicttype vl_verdictResponse9 := execute(IMAP_demo_Response_9());
+       	var verdicttype vl_verdictResponse10 := execute(IMAP_demo_Response_10());
+  }
+
+}
